@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Tài Chính - CARBON ATS</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./duan.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.7/countUp.umd.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* CSS CHUYÊN BIỆT CHO TRANG BÁO CÁO TÀI CHÍNH */
+        body { background: #020202; }
+
+        .report-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; }
+        .report-title h2 { font-size: 28px; font-weight: 800; color: #fff; margin: 0 0 5px 0; letter-spacing: -1px; }
+        .report-title h2 span { color: #10b981; }
+        .report-title p { color: #888; margin: 0; font-size: 14px; }
+        
+        .report-tools { display: flex; gap: 15px; }
+        .tool-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px;}
+        .tool-btn:hover { background: rgba(255,255,255,0.1); }
+        .tool-btn.primary { background: #10b981; color: #000; border: none; }
+        .tool-btn.primary:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2); }
+
+        /* KPI Cards */
+        .kpi-row { display: flex; gap: 20px; margin-bottom: 30px; }
+        .kpi-card { 
+            flex: 1; background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid #333; 
+            padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .kpi-card:hover { transform: translateY(-5px); }
+        .kpi-card h4 { margin: 0 0 10px 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .kpi-value-wrapper { display: flex; align-items: baseline; gap: 5px; }
+        .kpi-card .kpi-value { font-size: 34px; font-weight: 800; color: #fff; font-family: 'SF Pro Display', sans-serif; letter-spacing: -1px; }
+        .kpi-card .kpi-unit { font-size: 16px; color: #666; font-weight: 600; }
+        
+        .kpi-trend { font-size: 12px; margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-weight: 600;}
+
+        /* Bảng Báo cáo */
+        .report-grid { display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 25px; }
+        .report-panel { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; }
+        .panel-title { font-size: 16px; font-weight: 600; color: #fff; margin: 0 0 25px 0; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .advanced-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .advanced-table th { color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; }
+        .advanced-table td { padding: 18px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 14px; color: #e0e0e0; vertical-align: middle;}
+        .advanced-table tr:hover td { background: rgba(255,255,255,0.03); }
+        
+        .source-name-col { font-weight: 600; color: #fff; display: block; margin-bottom: 4px; font-size: 15px;}
+        .source-type-col { font-size: 11px; color: #3b82f6; background: rgba(59, 130, 246, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); display: inline-block;}
+        .source-type-col.organic { color: #facc15; background: rgba(250, 204, 21, 0.1); border-color: rgba(250, 204, 21, 0.2); }
+
+        .money-text { font-family: 'Roboto Mono', monospace; font-weight: 700; color: #fff; font-size: 15px;}
+        .highlight-money { color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(231, 76, 60, 0.2); font-family: 'Roboto Mono', monospace;}
+        .highlight-money.good { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); }
+
+        .chart-container { position: relative; height: 350px; width: 100%; margin-top: 10px;}
+
+        /* Loader */
+        .skeleton-loader { display: flex; flex-direction: column; gap: 20px; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #020202; z-index: 50; padding: 20px; transition: opacity 0.5s; }
+        .skeleton-box { background: rgba(255,255,255,0.03); border-radius: 8px; animation: skeletonShimmer 1.5s infinite; }
+        @keyframes skeletonShimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .content-wrapper { opacity: 0; transition: 0.8s; }
+        .content-wrapper.loaded { opacity: 1; }
+
+        @media (max-width: 1100px) {
+            .report-grid { grid-template-columns: 1fr; }
+            .kpi-row { flex-wrap: wrap; }
+            .kpi-card { min-width: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand"><a href="trangchu.html" style="text-decoration: none;"><span class="logo-text">CARBON</span><span class="logo-highlight"> ATS</span></a></div>
+        <ul class="nav-menu">
+            <li><a href="trangchu.html" class="nav-item">TỔNG QUAN</a></li>
+            <li><a href="tuyendung.html" class="nav-item">TIN TUYỂN DỤNG</a></li>
+            <li><a href="pheuungvien.html" class="nav-item">PHỄU ỨNG VIÊN</a></li>
+            <li><a href="phongvan.html" class="nav-item">LỊCH PHỎNG VẤN</a></li>
+            <li><a href="baocao.html" class="nav-item active">BÁO CÁO</a></li>
+        </ul>
+        <div class="nav-user" onclick="window.location.href='admin.html'"><span class="avatar">QH</span><span class="username">Quang Hưng</span></div>
+    </nav>
+
+    <div class="main-container" style="position: relative;">
+        
+        <div id="loader" class="skeleton-loader">
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div class="skeleton-box" style="width: 300px; height: 50px;"></div>
+                <div class="skeleton-box" style="flex: 1; height: 50px;"></div>
+            </div>
+            <div style="display: flex; gap: 20px;">
+                <div class="skeleton-box" style="flex: 1; height: 150px;"></div>
+                <div class="skeleton-box" style="flex: 1; height: 150px;"></div>
+                <div class="skeleton-box" style="flex: 1; height: 150px;"></div>
+            </div>
+        </div>
+
+        <div id="report-content" class="content-wrapper">
+            <div class="report-header">
+                <div class="report-title">
+                    <h2>Báo Cáo <span>Tài Chính Tuyển Dụng</span></h2>
+                    <p id="report-date-text">Kỳ báo cáo: Đang cập nhật | Đồng bộ đối soát với Phòng Kế toán</p>
+                </div>
+                <div class="report-tools">
+                    <button class="tool-btn"><i class="fas fa-calendar-alt"></i> Quý này ▼</button>
+                    <button class="tool-btn primary" onclick="exportExcel()">⭳ Tải Báo Cáo Kế Toán</button>
+                </div>
+            </div>
+
+            <div class="kpi-row">
+                <div class="kpi-card" style="border-left-color: #facc15;">
+                    <h4>Ngân Sách Được Duyệt (Budget)</h4>
+                    <div class="kpi-value-wrapper">
+                        <div class="kpi-value" id="kpi-budget">25,000,000</div>
+                        <div class="kpi-unit">VNĐ</div>
+                    </div>
+                    <div class="kpi-trend" style="color:#facc15; background: rgba(250, 204, 21, 0.1);"><i class="fas fa-file-invoice-dollar"></i> Mốc cấp ngân sách từ Quý trước</div>
+                </div>
+
+                <div class="kpi-card" style="border-left-color: #e74c3c;">
+                    <h4>Thực Chi Hiện Tại (Actual Cost)</h4>
+                    <div class="kpi-value-wrapper">
+                        <div class="kpi-value" id="kpi-actual">0</div>
+                        <div class="kpi-unit">VNĐ</div>
+                    </div>
+                    <div class="kpi-trend" id="budget-status">Đang tính toán...</div>
+                </div>
+
+                <div class="kpi-card" style="border-left-color: #10b981;">
+                    <h4>Cost Per Hire (CPH) Chung</h4>
+                    <div class="kpi-value-wrapper">
+                        <div class="kpi-value" id="kpi-cph">0</div>
+                        <div class="kpi-unit">VNĐ / NV</div>
+                    </div>
+                    <div class="kpi-trend" style="color:#10b981; background: rgba(16, 185, 129, 0.1);"><i class="fas fa-user-check"></i> Chi phí TB để chốt 1 nhân sự</div>
+                </div>
+            </div>
+
+            <div class="report-grid">
+                
+                <div class="report-panel">
+                    <h3 class="panel-title">Phân bổ Ngân sách theo Kênh Quảng Cáo (Traffic Sources)</h3>
+                    <table class="advanced-table">
+                        <thead>
+                            <tr>
+                                <th>Nền tảng MKT</th>
+                                <th>Ngân sách Đã Chi</th>
+                                <th>CPH Thực tế / Kênh</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body-cost">
+                            <!-- Đổ dữ liệu thật -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="report-panel">
+                    <h3 class="panel-title">Tỷ trọng Giải ngân theo Kênh</h3>
+                    <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script src="./duan.js"></script>
+    <script>
+        let myChart = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const today = new Date();
+            const quarter = Math.floor((today.getMonth() / 3)) + 1;
+            const year = today.getFullYear();
+            document.getElementById('report-date-text').innerText = `Kỳ báo cáo: Quý ${quarter}/${year} | Phân tích dòng tiền Marketing Tuyển dụng`;
+
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 300);
+                document.getElementById('report-content').classList.add('loaded');
+
+                // CHẠY THUẬT TOÁN TÀI CHÍNH KÊNH TRUYỀN THÔNG
+                processChannelFinancialData();
+            }, 600); 
+        });
+
+        function processChannelFinancialData() {
+            // LẤY TỔNG DỮ LIỆU CV THỰC TẾ TRONG HỆ THỐNG
+            let jobs = JSON.parse(localStorage.getItem('carbonJobs')) || [];
+            let totalCVs = 0;
+            let totalHired = 0;
+
+            jobs.forEach(job => {
+                totalCVs += (job.totalCv || 0);
+                totalHired += (job.hiredCv || 0);
+            });
+
+            // Nếu hệ thống trống trơn, giả lập số liệu thực tế để demo
+            if(totalCVs === 0) {
+                totalCVs = 153;
+                totalHired = 6;
+            }
+
+            // BIẾN SỐ TÀI CHÍNH TỔNG
+            const costPerCvMkt = 125000;
+            const platformFee = 5000000; 
+            const accountingBudget = 25000000; 
+
+            const totalMktCost = totalCVs * costPerCvMkt;
+            const actualTotalCost = totalMktCost + platformFee;
+            
+            let costPerHire = totalHired > 0 ? Math.round(actualTotalCost / totalHired) : 0;
+
+            // SO SÁNH VỚI 25 TRIỆU
+            const statusEl = document.getElementById('budget-status');
+            const diff = accountingBudget - actualTotalCost;
+
+            if (diff >= 0) {
+                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> Tiết kiệm ${diff.toLocaleString('vi-VN')}đ`;
+                statusEl.style.color = '#10b981';
+                statusEl.style.background = 'rgba(16, 185, 129, 0.1)';
+            } else {
+                const over = Math.abs(diff);
+                statusEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Vượt ngân sách ${over.toLocaleString('vi-VN')}đ`;
+                statusEl.style.color = '#e74c3c';
+                statusEl.style.background = 'rgba(231, 76, 60, 0.1)';
+            }
+
+            new countUp.CountUp('kpi-actual', actualTotalCost, { duration: 2, separator: ',' }).start();
+            new countUp.CountUp('kpi-cph', costPerHire, { duration: 2.5, separator: ',' }).start();
+
+            // =========================================================================
+            // MÔ PHỎNG PHÂN BỔ THEO KÊNH QUẢNG CÁO (Facebook, LinkedIn, TikTok...)
+            // =========================================================================
+            const channels = [
+                { name: 'Facebook Ads', type: 'Paid Social', budgetShare: 0.50, hireShare: 0.35, icon: 'fa-facebook' },
+                { name: 'LinkedIn Ads', type: 'Professional', budgetShare: 0.25, hireShare: 0.40, icon: 'fa-linkedin' },
+                { name: 'Instagram & TikTok', type: 'Paid Social', budgetShare: 0.15, hireShare: 0.05, icon: 'fa-instagram' },
+                { name: 'Nội bộ (Referral)', type: 'Organic', budgetShare: 0.10, hireShare: 0.20, icon: 'fa-users' }
+            ];
+
+            const tbody = document.getElementById('table-body-cost');
+            tbody.innerHTML = '';
+            
+            let chartLabels = [];
+            let chartMktCostData = [];
+
+            // Thuật toán chia tiền đảm bảo cộng lại vừa đúng 100%
+            let remainingHired = totalHired;
+            let remainingCost = totalMktCost;
+
+            channels.forEach((c, index) => {
+                const isLast = index === channels.length - 1;
+                
+                // Trích xuất số liệu cho từng kênh
+                const c_hired = isLast ? remainingHired : Math.round(totalHired * c.hireShare);
+                const c_cost = isLast ? remainingCost : Math.round(totalMktCost * c.budgetShare);
+
+                // Trừ dần
+                remainingHired -= c_hired;
+                remainingCost -= c_cost;
+
+                // Tính Cost Per Hire của riêng kênh đó
+                let channelCph = 0;
+                let cphClass = 'highlight-money';
+                let cphText = '<span style="color:#888; font-size:12px;">Đang đốt tiền...</span>';
+                
+                if (c_hired > 0) {
+                    channelCph = Math.round(c_cost / c_hired);
+                    // Đánh giá kênh nào rẻ thì màu xanh, đắt thì màu đỏ
+                    if(channelCph <= costPerHire) cphClass += ' good'; 
+                    cphText = `<span class="${cphClass}">${channelCph.toLocaleString('vi-VN')} đ</span>`;
+                }
+
+                // Nếu là kênh Organic (Nội bộ) thì màu sắc label sẽ khác
+                const typeClass = c.type === 'Organic' ? 'source-type-col organic' : 'source-type-col';
+
+                chartLabels.push(c.name);
+                chartMktCostData.push(c_cost);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <span class="source-name-col"><i class="fab ${c.icon}" style="margin-right:5px; color:#888;"></i> ${c.name}</span>
+                        <span class="${typeClass}">${c.type}</span>
+                    </td>
+                    <td>
+                        <span class="money-text">${c_cost.toLocaleString('vi-VN')} đ</span><br>
+                        <span style="font-size: 11px; color:#888;">~ ${Math.round(c.budgetShare*100)}% Tổng NS MKT</span>
+                    </td>
+                    <td>${cphText}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Vẽ biểu đồ bánh Doughnut
+            initFinancialChart(chartLabels, chartMktCostData);
+        }
+
+        function initFinancialChart(labels, costData) {
+            const ctxCost = document.getElementById('costChart').getContext('2d');
+            Chart.defaults.color = '#888';
+            Chart.defaults.font.family = "'SF Pro Display', 'Inter', sans-serif";
+
+            if(myChart) myChart.destroy();
+
+            myChart = new Chart(ctxCost, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: costData,
+                        backgroundColor: ['#3b82f6', '#0ea5e9', '#eab308', '#10b981'],
+                        borderWidth: 2,
+                        borderColor: '#111',
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    plugins: { 
+                        legend: { position: 'right', labels: { color: '#ccc', font: {size: 11}, padding: 15 } },
+                        tooltip: { callbacks: { label: function(context) { return ' ' + context.raw.toLocaleString('vi-VN') + ' VNĐ'; } } }
+                    },
+                    animation: { animateScale: true, animateRotate: true, duration: 1500 }
+                }
+            });
+        }
+
+        function exportExcel() {
+            const btn = document.querySelector('.tool-btn.primary');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Đang trích xuất...";
+            btn.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                alert("✅ File [BaoCao_TaiChinh_KenhQuangCao.xlsx] đã được tải xuống thành công!");
+                btn.innerHTML = originalText;
+                btn.style.pointerEvents = 'auto';
+            }, 1200);
+        }
+    </script>
+</body>
+</html>

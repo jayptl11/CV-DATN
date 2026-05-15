@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Phỏng Vấn - CARBON ATS</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;800&family=Inter:wght@300;400;600;800&family=Roboto+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="duan.css">
+    
+    <style>
+        /* CSS NÂNG CẤP VIP - LỊCH PHỎNG VẤN (GLASSMORPHISM) */
+        body { background: #020202; }
+
+        .schedule-header { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; 
+            background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 20px 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .date-picker { font-size: 18px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 15px; }
+        .date-nav { 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; 
+            width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            cursor: pointer; transition: 0.3s; 
+        }
+        .date-nav:hover { background: #facc15; color: #000; border-color: #facc15; box-shadow: 0 0 15px rgba(250,204,21,0.3); }
+        
+        .schedule-tools button { 
+            background: #fff; color: #000; border: none; padding: 12px 24px; border-radius: 8px; 
+            font-weight: 800; cursor: pointer; font-size: 13px; text-transform: uppercase; transition: 0.3s; letter-spacing: 1px;
+        }
+        .schedule-tools button:hover { background: #facc15; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(250, 204, 21, 0.2); }
+
+        .schedule-list { display: flex; flex-direction: column; gap: 20px; }
+        
+        .interview-card {
+            display: flex; align-items: center; 
+            background: rgba(20, 20, 20, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; transition: all 0.4s ease;
+            position: relative; overflow: hidden;
+        }
+        .interview-card:hover { transform: translateX(8px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 35px rgba(0,0,0,0.6); background: rgba(30, 30, 30, 0.6); }
+        
+        .interview-card.live { 
+            border-left: 4px solid #10b981; 
+            background: linear-gradient(90deg, rgba(16,185,129,0.08) 0%, rgba(20,20,20,0.4) 100%); 
+            box-shadow: inset 0 0 20px rgba(16,185,129,0.05);
+        }
+        .live-dot { 
+            width: 10px; height: 10px; background: #10b981; border-radius: 50%; 
+            box-shadow: 0 0 12px #10b981; animation: pulseLive 1.5s infinite; 
+            position: absolute; top: 25px; left: 15px; display: none;
+        }
+        .interview-card.live .live-dot { display: block; }
+        @keyframes pulseLive { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); } 70% { box-shadow: 0 0 0 10px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+
+        .time-col { flex: 0 0 120px; border-right: 1px dashed rgba(255,255,255,0.1); margin-right: 25px; }
+        .time-col h2 { font-size: 28px; color: #fff; margin: 0 0 5px 0; font-family: 'Roboto Mono', monospace; font-weight: 800; letter-spacing: -1px;}
+        .time-col p { margin: 0; color: #facc15; font-size: 13px; letter-spacing: 1px; font-weight: 700;}
+        
+        .cand-col { flex: 1; display: flex; align-items: center; gap: 18px; }
+        .cand-avatar { width: 50px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-weight: 800; font-size: 16px; border: 1px solid rgba(255,255,255,0.1); }
+        .cand-info h3 { margin: 0 0 6px 0; color: #fff; font-size: 17px; font-weight: 700; letter-spacing: 0.5px;}
+        .cand-info p { margin: 0; color: #aaa; font-size: 13px; }
+        .job-tag { display: inline-block; padding: 4px 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; font-size: 11px; margin-top: 8px; color: #e0e0e0; font-weight: 600;}
+
+        .manager-col { flex: 0 0 220px; }
+        .manager-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+        .manager-name { font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 8px; display: inline-block; border: 1px solid transparent; }
+        .mgr-blue { color: #60a5fa; background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); }
+
+        .action-col { flex: 0 0 150px; text-align: right; }
+        .btn-evaluate { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .interview-card.live .btn-evaluate { background: #facc15; color: #000; border: none; box-shadow: 0 4px 15px rgba(250,204,21,0.2); }
+        .btn-evaluate:hover { background: #fff; color: #000; border-color: #fff; transform: translateY(-2px);}
+        
+        .result-badge { display: none; padding: 12px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; text-align: center;}
+        .res-pass { display: inline-block; background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); box-shadow: 0 0 15px rgba(16,185,129,0.1);}
+        .res-fail { display: inline-block; background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display: none; justify-content: center; align-items: center; z-index: 10000;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        
+        .modal-box {
+            background: rgba(15, 15, 15, 0.8); width: 100%; max-width: 500px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            transform: translateY(40px) scale(0.95); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden;
+        }
+        .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
+
+        .modal-header { padding: 25px 30px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; color: #fff; font-size: 18px; letter-spacing: 0.5px;}
+        .btn-close { background: transparent; border: none; color: #666; font-size: 28px; cursor: pointer; transition: 0.3s; line-height: 1;}
+        .btn-close:hover { color: #facc15; transform: rotate(90deg);}
+
+        .modal-body { padding: 30px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: #aaa; font-size: 13px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px 15px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; font-family: 'SF Pro Display', sans-serif;}
+        .form-control:focus { border-color: #facc15; box-shadow: 0 0 0 2px rgba(250,204,21,0.2); }
+        select.form-control option { background: #111; color: #fff; }
+        
+        /* Chỉnh lại icon lịch cho thẻ input type="date" và "time" */
+        ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+        .eval-cand-info { display: flex; align-items: center; gap: 15px; margin-bottom: 35px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);}
+        .score-group { margin-bottom: 30px; }
+        .score-group label { display: flex; justify-content: space-between; color: #aaa; font-size: 13px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;}
+        .score-group input[type=range] { width: 100%; appearance: none; background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; outline: none; cursor: pointer;}
+        .score-group input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #facc15; cursor: pointer; box-shadow: 0 0 10px rgba(250,204,21,0.5); border: 2px solid #fff;}
+        .score-value { color: #facc15; font-weight: 800; font-size: 18px; font-family: 'Roboto Mono', monospace;}
+
+        .modal-footer { padding: 20px 30px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 15px; }
+        .btn-fail { flex: 1; padding: 16px; background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); color: #e74c3c; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-fail:hover { background: #e74c3c; color: #fff; box-shadow: 0 5px 15px rgba(231,76,60,0.3);}
+        .btn-pass { flex: 1; padding: 16px; background: #10b981; border: none; color: #000; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-pass:hover { background: #059669; color: #fff; box-shadow: 0 8px 20px rgba(16,185,129,0.4); transform: translateY(-2px);}
+        .btn-save-schedule { width: 100%; padding: 16px; background: #fff; color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-save-schedule:hover { background: #facc15; box-shadow: 0 5px 15px rgba(250,204,21,0.3); transform: translateY(-2px);}
+        
+        .empty-state { text-align: center; padding: 50px 20px; color: #666; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand"><a href="trangchu.html" style="text-decoration: none;"><span class="logo-text">CARBON</span><span class="logo-highlight"> ATS</span></a></div>
+        <ul class="nav-menu">
+            <li><a href="trangchu.html" class="nav-item">TỔNG QUAN</a></li>
+            <li><a href="tuyendung.html" class="nav-item">TIN TUYỂN DỤNG</a></li>
+            <li><a href="pheuungvien.html" class="nav-item">PHỄU ỨNG VIÊN</a></li>
+            <li><a href="phongvan.html" class="nav-item active">LỊCH PHỎNG VẤN</a></li>
+            <li><a href="baocao.html" class="nav-item">BÁO CÁO</a></li>
+        </ul>
+        <div class="nav-user" onclick="window.location.href='admin.html'"><span class="avatar">QH</span><span class="username">Quang Hưng</span></div>
+    </nav>
+
+    <div class="main-container">
+        
+        <div class="schedule-header">
+            <div class="date-picker">
+                <div class="date-nav">❮</div>
+                <span id="display-date">Hôm nay: Đang tải...</span>
+                <div class="date-nav">❯</div>
+            </div>
+            <div class="schedule-tools">
+                <button onclick="openScheduleModal()">+ Đặt lịch mới</button>
+            </div>
+        </div>
+
+        <div class="schedule-list" id="scheduleListContainer">
+            <!-- Nơi chứa card -->
+        </div>
+
+    </div>
+
+    <!-- MODAL 1: ĐÁNH GIÁ ỨNG VIÊN -->
+    <div class="modal-overlay" id="evalModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Phiếu Đánh Giá Ứng Viên</h3>
+                <button class="btn-close" onclick="closeEvalModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="eval-cand-info">
+                    <div class="cand-avatar" id="eval-avatar" style="background: #facc15; color: #000; border:none; width: 45px; height: 45px;"></div>
+                    <div>
+                        <h3 id="eval-name" style="margin:0 0 5px 0; color:#fff; font-size: 17px;"></h3>
+                        <p id="eval-job" style="margin:0; color:#aaa; font-size: 13px;"></p>
+                    </div>
+                </div>
+
+                <div class="score-group">
+                    <label>Chuyên môn / Tay nghề <span class="score-value" id="val-skill">8.0</span></label>
+                    <input type="range" min="1" max="10" step="0.5" value="8" oninput="document.getElementById('val-skill').innerText = parseFloat(this.value).toFixed(1)">
+                </div>
+                
+                <div class="score-group">
+                    <label>Thái độ / Cầu tiến <span class="score-value" id="val-attitude">9.0</span></label>
+                    <input type="range" min="1" max="10" step="0.5" value="9" oninput="document.getElementById('val-attitude').innerText = parseFloat(this.value).toFixed(1)">
+                </div>
+
+                <div class="score-group" style="margin-bottom: 0;">
+                    <label>Phù hợp Văn hóa Carbon <span class="score-value" id="val-culture">8.0</span></label>
+                    <input type="range" min="1" max="10" step="0.5" value="8" oninput="document.getElementById('val-culture').innerText = parseFloat(this.value).toFixed(1)">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <input type="hidden" id="current-eval-id">
+                <button class="btn-fail" onclick="submitEvalResult('FAIL')">Loại (FAIL)</button>
+                <button class="btn-pass" onclick="submitEvalResult('PASS')">Tuyển (PASS)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ĐẶT LỊCH PHỎNG VẤN MỚI (Đã sửa Ngày phỏng vấn) -->
+    <div class="modal-overlay" id="scheduleModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Đặt Lịch Phỏng Vấn</h3>
+                <button class="btn-close" onclick="closeScheduleModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Chọn Ứng Viên (Từ Cột Interview)</label>
+                    <select id="sch-candidate" class="form-control">
+                        <!-- Sẽ load bằng Javascript -->
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Ngày Phỏng vấn</label>
+                        <input type="date" id="sch-date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Giờ Phỏng vấn</label>
+                        <input type="time" id="sch-time" class="form-control" value="09:00">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Người phỏng vấn</label>
+                    <input type="text" id="sch-interviewer" class="form-control" value="Mr. Quang Hưng">
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display: block;">
+                <button class="btn-save-schedule" onclick="saveNewSchedule()">Xác Nhận Đặt Lịch</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="config.js"></script>
+    <script src="duan.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' };
+            document.getElementById('display-date').innerText = "Hôm nay: " + today.toLocaleDateString('vi-VN', options);
+            renderSchedules();
+        });
+
+        function getSchedules() {
+            return JSON.parse(localStorage.getItem('carbonSchedules')) || [];
+        }
+
+        function getInitials(name) {
+            if(!name) return "NV";
+            let cleanName = name.split(' - ')[0]; 
+            let parts = cleanName.split(' ');
+            if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+            return cleanName.substring(0, 2).toUpperCase();
+        }
+
+        function renderSchedules() {
+            const container = document.getElementById('scheduleListContainer');
+            const schedules = getSchedules();
+            container.innerHTML = ''; 
+
+            if (schedules.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times" style="font-size: 40px; margin-bottom: 15px; color: #444;"></i>
+                        <p>Chưa có lịch phỏng vấn nào được đặt.<br>Hãy chọn "+ Đặt lịch mới" để bắt đầu.</p>
+                    </div>`;
+                return;
+            }
+
+            // Thuật toán: Sắp xếp theo Ngày rồi mới đến Giờ
+            schedules.sort((a, b) => {
+                const dateA = new Date(a.date + 'T' + a.time);
+                const dateB = new Date(b.date + 'T' + b.time);
+                return dateA - dateB;
+            });
+
+            schedules.forEach((sch, index) => {
+                const initials = getInitials(sch.candName);
+                const isLive = index === 0 && sch.status === 'PENDING'; 
+                
+                // Xử lý hiển thị Ngày theo format Việt Nam (Ngày/Tháng/Năm)
+                let displayDate = "";
+                if(sch.date) {
+                    const dObj = new Date(sch.date);
+                    displayDate = dObj.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                }
+                
+                let actionHTML = '';
+                if (sch.status === 'PENDING') {
+                    actionHTML = `<button class="btn-evaluate ${isLive ? 'live-btn' : ''}" onclick="openEvalModal('${sch.id}')">${isLive ? 'Đánh giá ngay' : 'Nhập kết quả'}</button>`;
+                } else if (sch.status === 'PASS') {
+                    actionHTML = `<div class="result-badge res-pass" style="display:inline-block;">✔ ĐÃ TRÚNG TUYỂN</div>`;
+                } else {
+                    actionHTML = `<div class="result-badge res-fail" style="display:inline-block;">✘ KHÔNG ĐẠT</div>`;
+                }
+
+                const cardHTML = `
+                    <div class="interview-card ${isLive ? 'live' : ''}" id="sch-card-${sch.id}">
+                        <div class="live-dot"></div>
+                        <div class="time-col">
+                            <h2>${sch.time}</h2>
+                            <p>${displayDate}</p> <!-- Hiển thị Ngày thay vì Thời lượng -->
+                        </div>
+                        <div class="cand-col">
+                            <div class="cand-avatar">${initials}</div>
+                            <div class="cand-info">
+                                <h3>${sch.candName.split(' - ')[0]}</h3>
+                                <p>SĐT: ${sch.candName.split(' - ')[1] || 'Đang cập nhật'}</p>
+                                <div class="job-tag">${sch.candJob}</div>
+                            </div>
+                        </div>
+                        <div class="manager-col">
+                            <span class="manager-label">Người phỏng vấn</span>
+                            <span class="manager-name mgr-blue">${sch.interviewer}</span>
+                        </div>
+                        <div class="action-col">
+                            ${actionHTML}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        const schModal = document.getElementById('scheduleModal');
+
+        function openScheduleModal() {
+            const allCandidates = JSON.parse(localStorage.getItem('carbonCandidates')) || [];
+            const savedStatuses = JSON.parse(localStorage.getItem('carbonColumnState')) || {};
+            const selectEl = document.getElementById('sch-candidate');
+            
+            selectEl.innerHTML = '';
+
+            const interviewCandidates = allCandidates.filter(c => {
+                const status = savedStatuses[c.id] || c.status;
+                return status === 'col-interview';
+            });
+
+            if (interviewCandidates.length === 0) {
+                selectEl.innerHTML = '<option value="" disabled selected>Không có ứng viên nào ở cột Interview</option>';
+            } else {
+                interviewCandidates.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = JSON.stringify({ id: c.id, name: c.name, job: c.position }); 
+                    opt.innerText = `${c.name.split(' - ')[0]} - ${c.position}`;
+                    selectEl.appendChild(opt);
+                });
+            }
+
+            // Điền tự động ngày hôm nay vào ô chọn Ngày
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('sch-date').value = todayStr;
+
+            schModal.style.display = 'flex';
+            setTimeout(() => schModal.classList.add('active'), 10);
+        }
+
+        function closeScheduleModal() {
+            schModal.classList.remove('active');
+            setTimeout(() => schModal.style.display = 'none', 400);
+        }
+
+        function saveNewSchedule() {
+            const candDataStr = document.getElementById('sch-candidate').value;
+            if (!candDataStr) {
+                alert("Vui lòng sang trang Phễu kéo ứng viên vào cột Interview trước khi đặt lịch!");
+                return;
+            }
+
+            const candData = JSON.parse(candDataStr);
+            const date = document.getElementById('sch-date').value; // Lấy Ngày
+            const time = document.getElementById('sch-time').value; // Lấy Giờ
+            const interviewer = document.getElementById('sch-interviewer').value;
+
+            const newSchedule = {
+                id: 'sch-' + Date.now(),
+                candId: candData.id,
+                candName: candData.name,
+                candJob: candData.job,
+                date: date, // Lưu trữ định dạng gốc YYYY-MM-DD
+                time: time,
+                interviewer: interviewer,
+                status: 'PENDING' 
+            };
+
+            let schedules = getSchedules();
+            schedules.push(newSchedule);
+            localStorage.setItem('carbonSchedules', JSON.stringify(schedules));
+
+            closeScheduleModal();
+            renderSchedules(); 
+        }
+
+        const evalModal = document.getElementById('evalModal');
+
+        function openEvalModal(schId) {
+            const schedules = getSchedules();
+            const sch = schedules.find(s => s.id === schId);
+            if (!sch) return;
+
+            document.getElementById('eval-name').innerText = sch.candName.split(' - ')[0];
+            document.getElementById('eval-job').innerText = sch.candJob;
+            document.getElementById('eval-avatar').innerText = getInitials(sch.candName);
+            document.getElementById('current-eval-id').value = schId;
+
+            document.querySelectorAll('input[type=range]').forEach(input => { input.value = 8; });
+            document.querySelectorAll('.score-value').forEach(span => { span.innerText = '8.0'; });
+
+            evalModal.style.display = 'flex';
+            setTimeout(() => evalModal.classList.add('active'), 10);
+        }
+
+        function closeEvalModal() {
+            evalModal.classList.remove('active');
+            setTimeout(() => evalModal.style.display = 'none', 400);
+        }
+
+        function submitEvalResult(resultString) {
+            const schId = document.getElementById('current-eval-id').value;
+            let schedules = getSchedules();
+            let savedStatuses = JSON.parse(localStorage.getItem('carbonColumnState')) || {};
+            
+            const index = schedules.findIndex(s => s.id === schId);
+            if (index !== -1) {
+                schedules[index].status = resultString;
+                localStorage.setItem('carbonSchedules', JSON.stringify(schedules));
+
+                const targetCandId = schedules[index].candId;
+                if (targetCandId) {
+                    if (resultString === 'PASS') {
+                        savedStatuses[targetCandId] = 'col-hired'; 
+                    } else if (resultString === 'FAIL') {
+                        savedStatuses[targetCandId] = 'col-rejected'; 
+                    }
+                    localStorage.setItem('carbonColumnState', JSON.stringify(savedStatuses));
+                }
+            }
+
+            if(resultString === 'PASS') {
+                fireSuccessConfetti();
+            }
+
+            closeEvalModal();
+            renderSchedules(); 
+        }
+
+        function fireSuccessConfetti() {
+            if (typeof confetti !== 'undefined') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#10b981', '#34d399', '#ffffff'] });
+            }
+        }
+    </script>
+</body>
+</html>

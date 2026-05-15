@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác thực - CARBON ATS</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* CSS ĐẶC QUYỀN CHO TRANG AUTH (SPA + 3D ORBS) */
+        body { margin: 0; padding: 0; overflow: hidden; background: #050505; font-family: 'SF Pro Display', 'Inter', sans-serif;}
+        
+        /* Nền tối ưu chiều sâu */
+        .login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+            overflow: hidden;
+        }
+
+        /* 1. HIỆU ỨNG QUẢ CẦU PHÁT SÁNG TRÔI NỔI (APPLE STYLE) */
+        .shape { position: absolute; filter: blur(80px); opacity: 0.6; animation: float 10s infinite ease-in-out alternate; z-index: 1;}
+        .shape-1 { width: 350px; height: 350px; background: #facc15; top: -10%; left: 15%; animation-delay: 0s; }
+        .shape-2 { width: 400px; height: 400px; background: #3b82f6; bottom: -20%; right: 10%; animation-delay: -5s; opacity: 0.4;}
+        .shape-3 { width: 250px; height: 250px; background: #8b5cf6; top: 40%; left: 60%; animation-delay: -2s; opacity: 0.3;}
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-50px) scale(1.1); }
+        }
+
+        /* Khung kính cường lực */
+        .login-box {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            padding: 40px; border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%; max-width: 420px; text-align: center;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.05);
+            transform: translateY(0);
+            animation: formFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.4s ease; position: relative; overflow: hidden; z-index: 10;
+        }
+
+        @keyframes formFadeIn {
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Hiệu ứng Rung lắc khi lỗi */
+        .shake {
+            animation: shakeError 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+            border-color: #e74c3c !important; box-shadow: 0 0 20px rgba(231, 76, 60, 0.2) !important;
+        }
+        @keyframes shakeError {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        .login-logo { font-size: 38px; font-weight: 800; letter-spacing: 2px; margin: 0 0 5px 0; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
+        .login-logo span { color: #facc15; font-weight: 300; }
+        .login-box > p { color: #aaa; font-size: 14px; margin-bottom: 35px; letter-spacing: 0.5px; transition: 0.3s;}
+
+        .form-container { position: relative; }
+        .auth-form { animation: slideIn 0.5s cubic-bezier(0.25, 1, 0.25, 1); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* Input 2.0 */
+        .input-group { position: relative; margin-bottom: 28px; text-align: left; }
+        .input-icon { position: absolute; top: 12px; left: 0; color: #666; font-size: 18px; transition: 0.3s; }
+        
+        .input-group input {
+            width: 100%; padding: 12px 35px 12px 35px;
+            background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2);
+            color: #fff; font-size: 15px; outline: none; transition: 0.3s; box-sizing: border-box; font-family: 'Inter', sans-serif;
+        }
+        
+        /* ====================================================================
+           ĐÂY LÀ ĐOẠN FIX LỖI NỀN TRẮNG KHI TRÌNH DUYỆT TỰ ĐỘNG ĐIỀN (AUTOFILL) 
+           ==================================================================== */
+        .input-group input:-webkit-autofill,
+        .input-group input:-webkit-autofill:hover, 
+        .input-group input:-webkit-autofill:focus, 
+        .input-group input:-webkit-autofill:active{
+            transition: background-color 5000s ease-in-out 0s;
+            -webkit-text-fill-color: #fff !important;
+        }
+
+        .input-group label {
+            position: absolute; top: 13px; left: 35px; color: #666; font-size: 15px;
+            pointer-events: none; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .input-group input:focus { border-bottom-color: #facc15; }
+        .input-group input:focus ~ .input-icon { color: #facc15; }
+        .input-group input:focus ~ label, .input-group input:not(:placeholder-shown) ~ label {
+            top: -16px; left: 0; font-size: 11px; color: #facc15; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* Nút đăng nhập */
+        .btn-login {
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #E5C07B 0%, #D4AF37 50%, #AA771C 100%);
+            color: #000; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;
+            border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(212,175,55,0.2);
+            margin-top: 10px;
+        }
+        .btn-login:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212,175,55,0.4); }
+
+        /* Lỗi Text */
+        .error-msg { color: #e74c3c; font-size: 13px; margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="login-overlay">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+
+        <div class="login-box" id="loginCard">
+            <h1 class="login-logo">CARBON<span>ATS</span></h1>
+            <p>Hệ thống Quản trị Tuyển dụng Thông minh</p>
+
+            <div class="form-container">
+                <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+                    
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" placeholder=" " required>
+                        <label>Tài khoản Quản trị</label>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" placeholder=" " required>
+                        <label>Mật khẩu hệ thống</label>
+                    </div>
+
+                    <p class="error-msg" id="errorText"><i class="fas fa-exclamation-triangle"></i> Sai tài khoản hoặc mật khẩu!</p>
+
+                    <button type="submit" class="btn-login">ĐĂNG NHẬP <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hàm Xử lý Đăng nhập ảo (Bảo mật bằng Hardcode tạm thời cho đồ án)
+        function handleLogin(event) {
+            event.preventDefault(); // Ngăn chặn tải lại trang form
+            
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const loginCard = document.getElementById('loginCard');
+            const errorText = document.getElementById('errorText');
+
+            // ĐÃ ĐỔI: Set cứng ID là 0901518899 và Pass là 123456 theo yêu cầu của Tùng
+            if (user === '0901518899' && pass === '123456') {
+                
+                // Tắt thông báo lỗi (nếu đang hiện)
+                errorText.style.display = 'none';
+                
+                // Hiệu ứng thu nhỏ và mờ dần khung đăng nhập
+                loginCard.style.transform = 'scale(0.9)';
+                loginCard.style.opacity = '0';
+                
+                // Đợi 0.5s cho hiệu ứng chạy xong rồi nhảy thẳng vào trang chủ
+                setTimeout(() => {
+                    window.location.href = 'trangchu.html';
+                }, 500);
+                
+            } else {
+                // Nếu nhập sai thì hiện dòng chữ đỏ và rung lắc
+                errorText.style.display = 'block';
+                loginCard.classList.add('shake');
+                
+                // Xóa class rung lắc sau khi chạy xong để có thể rung tiếp ở các lần nhập sai sau
+                setTimeout(() => {
+                    loginCard.classList.remove('shake');
+                }, 400);
+            }
+        }
+    </script>
+</body>
+</html>

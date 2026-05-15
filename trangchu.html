@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trung tâm Chỉ huy - CARBON ATS</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="duan.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.7/countUp.umd.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ================= BENTO GRID DASHBOARD ================= */
+        body { background: #020202; }
+        
+        .dashboard-container {
+            max-width: 1400px; margin: 0 auto 50px auto; padding: 0 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Dash */
+        .dash-header { 
+            display: flex; justify-content: space-between; align-items: flex-end; 
+            margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;
+        }
+        .dash-title h2 { font-size: 28px; font-weight: 800; margin: 0 0 5px 0; color: #fff; letter-spacing: -0.5px;}
+        .dash-title h2 span { color: #facc15; }
+        .dash-title p { color: #888; margin: 0; font-size: 14px; }
+        
+        .live-clock { 
+            background: rgba(250, 204, 21, 0.05); border: 1px solid rgba(250, 204, 21, 0.2); color: #facc15; 
+            padding: 8px 16px; border-radius: 8px; font-weight: 600; font-family: 'SF Pro Display', sans-serif; 
+            letter-spacing: 1px; box-shadow: 0 0 15px rgba(250,204,21,0.1);
+        }
+
+        /* ================= DROPDOWN LỌC THỜI GIAN CUSTOM ================= */
+        .custom-select-wrapper { position: relative; width: 220px; z-index: 100; }
+        .custom-select-trigger {
+            background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            color: #fff; border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 15px 12px 40px; border-radius: 10px; cursor: pointer;
+            font-family: 'SF Pro Display', sans-serif; font-weight: 600; font-size: 14px;
+            display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .custom-select-trigger:hover { 
+            border-color: rgba(250, 204, 21, 0.5); 
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.15); 
+        }
+        .custom-select-options {
+            display: none; position: absolute; top: calc(100% + 8px); left: 0; width: 100%;
+            background: #111114; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; overflow: hidden; padding: 6px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8); z-index: 999;
+        }
+        .custom-option {
+            padding: 10px 15px; color: #aaa; cursor: pointer; border-radius: 6px;
+            transition: all 0.2s ease; font-size: 13px; font-weight: 500; margin-bottom: 2px;
+        }
+        .custom-option:last-child { margin-bottom: 0; }
+        .custom-option:hover { 
+            background: rgba(250, 204, 21, 0.15); color: #facc15; padding-left: 20px; 
+        }
+
+        /* Lưới Bento */
+        .bento-grid { 
+            display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(140px, auto); gap: 20px; 
+        }
+
+        /* Thẻ cơ bản */
+        .bento-box {
+            background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; overflow: hidden;
+        }
+        .bento-box:hover { 
+            transform: translateY(-5px) scale(1.01); border-color: rgba(250, 204, 21, 0.3); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6); z-index: 2;
+        }
+
+        /* Phân bổ các Box */
+        .box-kpi { grid-column: span 1; }
+        .box-chart-main { grid-column: span 3; grid-row: span 2; }
+        .box-activity { grid-column: span 1; grid-row: span 3; }
+        .box-chart-sub { grid-column: span 2; grid-row: span 2; }
+        .box-tasks { grid-column: span 1; grid-row: span 2; }
+
+        /* Typography cho KPI */
+        .kpi-title { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
+        .kpi-value-wrapper { display: flex; align-items: baseline; gap: 4px; margin: 10px 0; }
+        .kpi-value { font-size: 38px; font-weight: 800; color: #fff; font-family: 'SF Pro Display', sans-serif;}
+        .kpi-unit { font-size: 16px; color: #666; font-weight: 700; }
+        
+        .kpi-trend { font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;}
+        .trend-up { color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 4px;}
+        .trend-down { color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 4px 8px; border-radius: 4px;}
+
+        /* Icon mờ nền */
+        .bg-icon { position: absolute; right: -10px; bottom: -20px; font-size: 80px; color: rgba(255,255,255,0.02); transform: rotate(-15deg); pointer-events: none;}
+
+        /* Chart Containers */
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+        .chart-header h3 { margin: 0; font-size: 16px; color: #fff; }
+        .chart-wrapper { position: relative; height: 100%; min-height: 250px; width: 100%; }
+
+        /* Nhật ký hoạt động */
+        .activity-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; max-height: 450px; padding-right: 5px;}
+        .activity-item { display: flex; gap: 12px; align-items: flex-start; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.05); transition: 0.3s;}
+        .activity-item:hover { background: rgba(255,255,255,0.02); border-radius: 8px; padding-left: 5px; }
+        .act-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; flex-shrink: 0;}
+        
+        .act-content p { margin: 0 0 5px 0; font-size: 13px; color: #ddd; line-height: 1.4;}
+        .act-content p strong { color: #fff; }
+        .act-time { font-size: 11px; color: #666; font-family: 'Roboto Mono', monospace; }
+
+        /* Tasks Alert */
+        .task-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .task-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border-left: 3px solid #facc15; font-size: 13px; color: #ccc; display: flex; justify-content: space-between; cursor: pointer; transition: 0.3s;}
+        .task-item:hover { background: rgba(255,255,255,0.08); border-left-width: 6px; }
+        .task-item span { color: #facc15; font-weight: bold; background: rgba(250,204,21,0.1); padding: 2px 8px; border-radius: 12px;}
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand"><a href="trangchu.html" style="text-decoration: none;"><span class="logo-text">CARBON</span><span class="logo-highlight"> ATS</span></a></div>
+        <ul class="nav-menu">
+            <li><a href="trangchu.html" class="nav-item active">TỔNG QUAN</a></li>
+            <li><a href="tuyendung.html" class="nav-item">TIN TUYỂN DỤNG</a></li>
+            <li><a href="pheuungvien.html" class="nav-item">PHỄU ỨNG VIÊN</a></li>
+            <li><a href="phongvan.html" class="nav-item">LỊCH PHỎNG VẤN</a></li>
+            <li><a href="baocao.html" class="nav-item">BÁO CÁO</a></li>
+        </ul>
+        <div class="nav-user" onclick="window.location.href='admin.html'">
+            <span class="avatar">QH</span>
+            <span class="username">Quang Hưng</span>
+        </div>
+    </nav>
+
+    <div class="dashboard-container" style="margin-top: 100px;">
+        
+        <div class="dash-header">
+            <div class="dash-title">
+                <h2 id="greeting-title">Trung tâm Chỉ huy</h2>
+                <p>Theo dõi luồng ứng viên và hiệu suất phòng HR theo thời gian thực.</p>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                
+                <div class="custom-select-wrapper">
+                    <div class="custom-select-trigger" onclick="toggleDropdown()">
+                        <i class="fas fa-calendar-alt" style="position: absolute; left: 15px; color: #facc15;"></i>
+                        <span id="custom-select-text">Tất cả thời gian</span>
+                        <i class="fas fa-chevron-down" style="color: #666; font-size: 10px;"></i>
+                    </div>
+                    
+                    <div class="custom-select-options" id="custom-options">
+                        <div class="custom-option" onclick="selectOption('all', 'Tất cả thời gian')">Tất cả thời gian</div>
+                        <div class="custom-option" onclick="selectOption('today', 'Hôm nay')">Hôm nay</div>
+                        <div class="custom-option" onclick="selectOption('yesterday', 'Hôm qua')">Hôm qua</div>
+                        <div class="custom-option" onclick="selectOption('7days', '7 ngày qua')">7 ngày qua</div>
+                        <div class="custom-option" onclick="selectOption('30days', '30 ngày qua')">30 ngày qua</div>
+                    </div>
+                    
+                    <input type="hidden" id="date-filter" value="all">
+                </div>
+                
+                <div class="live-clock" id="clock">Đang tải...</div>
+            </div>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-box box-kpi">
+                <i class="fas fa-file-alt bg-icon"></i>
+                <div class="kpi-title">Tổng CV Tiếp nhận</div>
+                <div class="kpi-value-wrapper">
+                    <div class="kpi-value" id="kpi-total">0</div>
+                </div>
+                <div class="kpi-trend trend-up"><i class="fas fa-arrow-up"></i> Tự động đồng bộ</div>
+            </div>
+            <div class="bento-box box-kpi">
+                <i class="fas fa-users bg-icon"></i>
+                <div class="kpi-title">Đang Phỏng vấn</div>
+                <div class="kpi-value-wrapper">
+                    <div class="kpi-value" id="kpi-interview">0</div>
+                </div>
+                <div class="kpi-trend trend-up"><i class="fas fa-arrow-up"></i> Cập nhật từ Phễu</div>
+            </div>
+            <div class="bento-box box-kpi" style="border-bottom: 2px solid #facc15;">
+                <i class="fas fa-briefcase bg-icon"></i>
+                <div class="kpi-title">Offer Thành công</div>
+                <div class="kpi-value-wrapper">
+                    <div class="kpi-value" style="color: #facc15;" id="kpi-hired">0</div>
+                </div>
+                <div class="kpi-trend trend-up"><i class="fas fa-arrow-up"></i> Đạt chỉ tiêu</div>
+            </div>
+            <div class="bento-box box-kpi">
+                <i class="fas fa-bolt bg-icon"></i>
+                <div class="kpi-title">Tỷ lệ Chuyển đổi</div>
+                <div class="kpi-value-wrapper">
+                    <div class="kpi-value" id="kpi-rate">0</div>
+                    <div class="kpi-unit">%</div>
+                </div>
+                <div class="kpi-trend trend-up"><i class="fas fa-chart-pie"></i> Real-time Sync</div>
+            </div>
+
+            <div class="bento-box box-chart-main">
+                <div class="chart-header">
+                    <h3>Phễu Tuyển dụng & Xu hướng nộp đơn</h3>
+                    <select style="background: #111; color: #fff; border: 1px solid #333; padding: 5px 10px; border-radius: 4px; outline: none; cursor: pointer;">
+                        <option>Tất cả bộ phận</option>
+                        <option>Xưởng Sản Xuất</option>
+                        <option>Showroom</option>
+                    </select>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bento-box box-activity">
+                <div class="chart-header">
+                    <h3>Live Updates</h3>
+                </div>
+                <ul class="activity-list">
+                    <!-- Sẽ được đổ tự động từ JS -->
+                </ul>
+            </div>
+
+            <div class="bento-box box-chart-sub">
+                <div class="chart-header">
+                    <h3>Nhu cầu Nhân sự theo Khối</h3>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="deptChart"></canvas>
+                </div>
+            </div>
+
+            <!-- PHẦN VIỆC CẦN LÀM ĐÃ ĐƯỢC CHUẨN BỊ ID ĐỂ JAVASCRIPT BẮT DỮ LIỆU -->
+            <div class="bento-box box-tasks">
+                <div class="chart-header">
+                    <h3>Việc cần làm (To-Do)</h3>
+                </div>
+                <div class="task-list">
+                    <div class="task-item" onclick="window.location.href='pheuungvien.html'">
+                        Đánh giá CV mới <span id="todo-new">0</span>
+                    </div>
+                    <div class="task-item" onclick="window.location.href='phongvan.html'">
+                        Phỏng vấn hôm nay <span id="todo-interview">0</span>
+                    </div>
+                    <div class="task-item" onclick="window.location.href='pheuungvien.html'">
+                        Ký Hợp đồng thử việc <span id="todo-hired">0</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="duan.js"></script>
+
+    <script>
+        let myMainChart = null;
+        let myDeptChart = null;
+
+        function setGreeting() {
+            const hour = new Date().getHours();
+            let greeting = "Xin chào";
+            if (hour >= 5 && hour < 12) greeting = "Chào buổi sáng";
+            else if (hour >= 12 && hour < 18) greeting = "Chào buổi chiều";
+            else greeting = "Chào buổi tối";
+            
+            document.getElementById('greeting-title').innerHTML = `${greeting}, <span>Quang Hưng!</span> ✌️`;
+        }
+        setGreeting();
+
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('clock').innerText = now.toLocaleDateString('vi-VN', options).replace(',', ' -');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function toggleDropdown() {
+            const options = document.getElementById('custom-options');
+            options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectOption(value, text) {
+            document.getElementById('custom-select-text').innerText = text;
+            document.getElementById('date-filter').value = value;
+            document.getElementById('custom-options').style.display = 'none';
+            fetchDashboardStats(); 
+        }
+
+        document.addEventListener('click', function(event) {
+            const wrapper = document.querySelector('.custom-select-wrapper');
+            if (wrapper && !wrapper.contains(event.target)) {
+                const options = document.getElementById('custom-options');
+                if (options) options.style.display = 'none';
+            }
+        });
+
+        function getRealTimeAgo(timestamp) {
+            if (!timestamp) return "Vừa xong";
+            const diffSeconds = Math.floor((Date.now() - timestamp) / 1000);
+            if (diffSeconds < 60) return "Vừa xong";
+            if (diffSeconds < 3600) return Math.floor(diffSeconds / 60) + " phút trước";
+            if (diffSeconds < 86400) return Math.floor(diffSeconds / 3600) + " giờ trước";
+            return Math.floor(diffSeconds / 86400) + " ngày trước";
+        }
+
+        // ====================================================================
+        // HÀM MỚI: TỰ ĐỘNG TÍNH TOÁN "VIỆC CẦN LÀM" (TO-DO LIST)
+        // ====================================================================
+        function updateToDoList(allCandidates, statuses) {
+            let newCvCount = 0;
+            let hiredCount = 0;
+
+            // 1. Đếm CV mới (Chưa đụng vào) và CV chuẩn bị ký Hợp đồng (Đã Passed)
+            allCandidates.forEach(cand => {
+                const s = statuses[cand.id] || cand.status || 'col-new';
+                if (s === 'col-new') newCvCount++;
+                if (s === 'col-hired') hiredCount++;
+            });
+
+            // 2. Tính số lượng Lịch phỏng vấn "Hôm nay" đang chờ đánh giá
+            let todayInterviewCount = 0;
+            const schedules = JSON.parse(localStorage.getItem('carbonSchedules')) || [];
+            
+            // Format ngày hiện tại chuẩn YYYY-MM-DD để khớp với dữ liệu lúc đặt lịch
+            const d = new Date();
+            const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+            schedules.forEach(sch => {
+                if (sch.date === todayStr && sch.status === 'PENDING') {
+                    todayInterviewCount++;
+                }
+            });
+
+            // 3. Cập nhật DOM
+            document.getElementById('todo-new').innerText = newCvCount;
+            document.getElementById('todo-interview').innerText = todayInterviewCount;
+            document.getElementById('todo-hired').innerText = hiredCount;
+        }
+
+        // ====================================================================
+        // ĐỒNG BỘ DỮ LIỆU & LỌC BẰNG THỜI GIAN THẬT
+        // ====================================================================
+        function fetchDashboardStats() {
+            let realCandidates = JSON.parse(localStorage.getItem('carbonCandidates')) || [];
+            const savedStatuses = JSON.parse(localStorage.getItem('carbonColumnState')) || {};
+            
+            const filterEl = document.getElementById('date-filter');
+            const filterValue = filterEl ? filterEl.value : 'all';
+
+            // Phân bổ ngày nộp ảo nếu bị thiếu
+            let needsSave = false;
+            const now = new Date().getTime();
+            const oneDay = 24 * 60 * 60 * 1000;
+            
+            realCandidates = realCandidates.map((cand, index) => {
+                if (!cand.appliedDate) {
+                    const daysAgo = [0, 1, 3, 8, 15][index % 5]; 
+                    cand.appliedDate = now - (daysAgo * oneDay);
+                    needsSave = true;
+                }
+                return cand;
+            });
+            if (needsSave) localStorage.setItem('carbonCandidates', JSON.stringify(realCandidates));
+
+            // -----> GỌI HÀM UPDATE TO-DO Ở ĐÂY (TRƯỚC KHI LỌC NGÀY THÁNG ĐỂ TO-DO LUÔN ĐÚNG HIỆN TẠI)
+            updateToDoList(realCandidates, savedStatuses);
+
+            // Bắt đầu Lọc dữ liệu theo Dropdown
+            let filteredCandidates = realCandidates.filter(cand => {
+                if (filterValue === 'all') return true;
+                
+                const candDate = new Date(cand.appliedDate);
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                candDate.setHours(0,0,0,0);
+                
+                const diffDays = (today - candDate) / (1000 * 60 * 60 * 24);
+
+                if (filterValue === 'today') return diffDays === 0;
+                if (filterValue === 'yesterday') return diffDays === 1;
+                if (filterValue === '7days') return diffDays >= 0 && diffDays <= 7;
+                if (filterValue === '30days') return diffDays >= 0 && diffDays <= 30;
+                return true;
+            });
+
+            let total = filteredCandidates.length; 
+            let interview = 0;
+            let hired = 0;
+
+            if (total === 0) {
+                runCountUp(0, 0, 0, 0);
+                renderLiveUpdates([], {});
+                updateCharts([], filterValue, savedStatuses);
+                return;
+            }
+
+            filteredCandidates.forEach(cand => {
+                const currentStatus = savedStatuses[cand.id] || cand.status || 'col-new'; 
+                if (currentStatus === 'col-interview') interview++;
+                if (currentStatus === 'col-hired') hired++;
+            });
+
+            let rate = total > 0 ? ((hired / total) * 100) : 0;
+
+            runCountUp(total, interview, hired, rate);
+            renderLiveUpdates(filteredCandidates, savedStatuses);
+            updateCharts(filteredCandidates, filterValue, savedStatuses);
+        }
+
+        function runCountUp(total, interview, hired, rate) {
+            new countUp.CountUp('kpi-total', total, { duration: 2 }).start();
+            new countUp.CountUp('kpi-interview', interview, { duration: 2.2 }).start();
+            new countUp.CountUp('kpi-hired', hired, { duration: 2.5 }).start();
+            new countUp.CountUp('kpi-rate', rate, { duration: 2.8, decimalPlaces: 1 }).start();
+        }
+
+        function renderLiveUpdates(candidates, statuses) {
+            const list = document.querySelector('.activity-list');
+            list.innerHTML = ''; 
+
+            if (candidates.length === 0) {
+                list.innerHTML = '<li style="color:#888; text-align:center; padding: 20px;">Hệ thống chưa ghi nhận hoạt động nào.</li>';
+                return;
+            }
+
+            const sortedCands = [...candidates].sort((a, b) => b.appliedDate - a.appliedDate).slice(0, 5);
+
+            sortedCands.forEach((cand) => {
+                const status = statuses[cand.id] || cand.status || 'col-new';
+                const name = cand.name.split(' - ')[0]; 
+                let timeStr = getRealTimeAgo(cand.appliedDate);
+                
+                let iconStr = ''; 
+                let contentStr = ''; 
+
+                if (status === 'col-new') {
+                    iconStr = '<div class="act-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;"><i class="fas fa-inbox"></i></div>';
+                    contentStr = `<p><strong>${name}</strong> vừa nộp CV ứng tuyển vị trí <em>${cand.position}</em>.</p>`;
+                } else if (status === 'col-screening') {
+                    iconStr = '<div class="act-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;"><i class="fas fa-search"></i></div>';
+                    contentStr = `<p>AI đang phân tích hồ sơ của <strong>${name}</strong>.</p>`;
+                } else if (status === 'col-interview') {
+                    iconStr = '<div class="act-icon" style="background: rgba(250, 204, 21, 0.2); color: #facc15;"><i class="fas fa-comments"></i></div>';
+                    contentStr = `<p>Đã chốt lịch phỏng vấn với <strong>${name}</strong>.</p>`;
+                } else if (status === 'col-hired') {
+                    iconStr = '<div class="act-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;"><i class="fas fa-handshake"></i></div>';
+                    contentStr = `<p><strong>${name}</strong> đã chấp nhận Offer.</p>`;
+                } else if (status === 'col-rejected') {
+                    iconStr = '<div class="act-icon" style="background: rgba(231, 76, 60, 0.2); color: #e74c3c;"><i class="fas fa-times"></i></div>';
+                    contentStr = `<p>Đã từ chối hồ sơ của <strong>${name}</strong>.</p>`;
+                }
+
+                const li = document.createElement('li');
+                li.className = 'activity-item';
+                li.innerHTML = `
+                    ${iconStr}
+                    <div class="act-content">
+                        ${contentStr}
+                        <span class="act-time">${timeStr}</span>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        Chart.defaults.color = '#888';
+        Chart.defaults.font.family = "'SF Pro Display', 'Inter', sans-serif";
+
+        function updateCharts(filteredData, filterValue, savedStatuses) {
+            const deptCounts = {};
+            filteredData.forEach(cand => {
+                const pos = cand.position || 'Khác';
+                deptCounts[pos] = (deptCounts[pos] || 0) + 1;
+            });
+            
+            const deptLabels = Object.keys(deptCounts).length > 0 ? Object.keys(deptCounts) : ['Trống'];
+            const deptData = Object.values(deptCounts).length > 0 ? Object.values(deptCounts) : [1];
+            const deptColors = ['#facc15', '#3b82f6', '#8b5cf6', '#10b981', '#e74c3c'];
+
+            if (myDeptChart) myDeptChart.destroy(); 
+            const ctxDept = document.getElementById('deptChart').getContext('2d');
+            myDeptChart = new Chart(ctxDept, {
+                type: 'doughnut',
+                data: {
+                    labels: deptLabels,
+                    datasets: [{ data: deptData, backgroundColor: deptColors, borderWidth: 2, borderColor: '#151515', hoverOffset: 12 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '75%',
+                    animation: { animateScale: true, animateRotate: true, duration: 1500 },
+                    plugins: { legend: { position: 'right', labels: { color: '#ccc', font: { size: 12 }, padding: 15 } } }
+                }
+            });
+
+            let mainLabels = [];
+            let lineData = [];
+            let barData = [];
+            
+            const isApproved = (id) => {
+                const s = savedStatuses[id] || 'col-new';
+                return s === 'col-interview' || s === 'col-hired';
+            };
+
+            if (filterValue === 'today' || filterValue === 'yesterday') {
+                mainLabels = ['0h-6h', '6h-12h', '12h-18h', '18h-24h'];
+                lineData = [0, 0, 0, 0];
+                barData = [0, 0, 0, 0];
+                
+                filteredData.forEach(cand => {
+                    const h = new Date(cand.appliedDate).getHours();
+                    let idx = Math.floor(h / 6);
+                    lineData[idx]++;
+                    if (isApproved(cand.id)) barData[idx]++;
+                });
+            } else {
+                const daysCount = (filterValue === '7days') ? 7 : 14; 
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                for (let i = daysCount - 1; i >= 0; i--) {
+                    let d = new Date(today);
+                    d.setDate(d.getDate() - i);
+                    let label = d.getDate() + '/' + (d.getMonth() + 1);
+                    mainLabels.push(label);
+                    lineData.push(0);
+                    barData.push(0);
+                }
+
+                filteredData.forEach(cand => {
+                    const d = new Date(cand.appliedDate);
+                    const labelStr = d.getDate() + '/' + (d.getMonth() + 1);
+                    const idx = mainLabels.indexOf(labelStr);
+                    if (idx !== -1) {
+                        lineData[idx]++;
+                        if (isApproved(cand.id)) barData[idx]++;
+                    }
+                });
+            }
+
+            if (myMainChart) myMainChart.destroy(); 
+            const ctxMain = document.getElementById('mainChart').getContext('2d');
+            
+            let gradientBar = ctxMain.createLinearGradient(0, 0, 0, 400);
+            gradientBar.addColorStop(0, 'rgba(250, 204, 21, 0.8)');
+            gradientBar.addColorStop(1, 'rgba(250, 204, 21, 0.1)');
+
+            myMainChart = new Chart(ctxMain, {
+                type: 'bar',
+                data: {
+                    labels: mainLabels,
+                    datasets: [
+                        { type: 'line', label: 'Lượt nộp CV', data: lineData, borderColor: '#3b82f6', borderWidth: 3, tension: 0.4, pointBackgroundColor: '#fff', pointRadius: 3 },
+                        { type: 'bar', label: 'Duyệt Phỏng vấn', data: barData, backgroundColor: gradientBar, borderRadius: 4, barPercentage: 0.6 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 1500, easing: 'easeOutQuart' },
+                    plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 12 } } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false }, ticks: { stepSize: 1, precision: 0 } }, x: { grid: { display: false }, border: { display: false } } }
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchDashboardStats(); 
+        });
+    </script>
+</body>
+</html>
