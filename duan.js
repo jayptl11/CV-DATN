@@ -248,7 +248,7 @@
        const cvLink = document.getElementById('md-cv-link');
        
        if (cand.cvUrl) {
-           cvFrame.src = cand.cvUrl;
+           cvFrame.src = 'https://docs.google.com/gview?url=' + encodeURIComponent(cand.cvUrl) + '&embedded=true';
            cvLink.href = cand.cvUrl;
            cvLink.style.display = 'block';
        } else {
