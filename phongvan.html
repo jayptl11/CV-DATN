@@ -426,33 +426,59 @@
             setTimeout(() => evalModal.style.display = 'none', 400);
         }
 
-        function submitEvalResult(resultString) {
+        async function submitEvalResult(resultString) {
+            const API_BASE = window.API_BASE_URL || 'http://localhost:3000';
             const schId = document.getElementById('current-eval-id').value;
             let schedules = getSchedules();
             let savedStatuses = JSON.parse(localStorage.getItem('carbonColumnState')) || {};
-            
+
             const index = schedules.findIndex(s => s.id === schId);
-            if (index !== -1) {
-                schedules[index].status = resultString;
-                localStorage.setItem('carbonSchedules', JSON.stringify(schedules));
+            if (index === -1) return;
 
-                const targetCandId = schedules[index].candId;
-                if (targetCandId) {
-                    if (resultString === 'PASS') {
-                        savedStatuses[targetCandId] = 'col-hired'; 
-                    } else if (resultString === 'FAIL') {
-                        savedStatuses[targetCandId] = 'col-rejected'; 
-                    }
-                    localStorage.setItem('carbonColumnState', JSON.stringify(savedStatuses));
+            const sch = schedules[index];
+            const targetCandId = sch.candId;
+
+            // Cập nhật localStorage (UI)
+            schedules[index].status = resultString;
+            localStorage.setItem('carbonSchedules', JSON.stringify(schedules));
+
+            if (targetCandId) {
+                savedStatuses[targetCandId] = resultString === 'PASS' ? 'col-hired' : 'col-rejected';
+                localStorage.setItem('carbonColumnState', JSON.stringify(savedStatuses));
+            }
+
+            // Gọi backend để gửi email + cập nhật hiredCount
+            try {
+                const scores = {
+                    skill: document.getElementById('val-skill').innerText,
+                    attitude: document.getElementById('val-attitude').innerText,
+                    culture: document.getElementById('val-culture').innerText
+                };
+
+                const res = await fetch(`${API_BASE}/api/interview-result`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        candidateId: targetCandId,
+                        result: resultString,
+                        scores
+                    })
+                });
+
+                if (res.ok) {
+                    alert(`✅ Đã ${resultString === 'PASS' ? 'TUYỂN' : 'LOẠI'} ứng viên và gửi email thông báo!`);
+                } else {
+                    const err = await res.json();
+                    alert(`⚠️ Đã cập nhật kết quả nhưng lỗi gửi email: ${err.error || 'Unknown'}`);
                 }
+            } catch (error) {
+                alert(`⚠️ Đã cập nhật kết quả nhưng không gửi được email: ${error.message}`);
             }
 
-            if(resultString === 'PASS') {
-                fireSuccessConfetti();
-            }
+            if (resultString === 'PASS') fireSuccessConfetti();
 
             closeEvalModal();
-            renderSchedules(); 
+            renderSchedules();
         }
 
         function fireSuccessConfetti() {

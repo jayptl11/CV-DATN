@@ -124,6 +124,11 @@
                     </div>
 
                     <div class="input-group">
+                        <input type="email" id="app-email" placeholder=" " required autocomplete="off">
+                        <label>Email liên hệ</label>
+                    </div>
+
+                    <div class="input-group">
                         <input type="tel" id="app-phone" placeholder=" " required autocomplete="off">
                         <label>Số điện thoại liên hệ</label>
                     </div>
@@ -131,10 +136,6 @@
                     <div class="input-group">
                         <select id="app-pos" required>
                             <option value="" disabled selected hidden></option>
-                            <option value="Carbon Cue Maker">Carbon Cue Maker (Ninh Bình)</option>
-                            <option value="CNC Operator">CNC Operator (Ninh Bình)</option>
-                            <option value="Web Developer">Web Developer (Nguyễn Tuân)</option>
-                            <option value="Painting Specialist">Painting Specialist (Nguyễn Tuân)</option>
                         </select>
                         <label>Vị trí ứng tuyển</label>
                     </div>
@@ -211,15 +212,42 @@
         }
 
         // ==========================================
-        // 3. NỘP HỒ SƠ — AI SCORING QUA BACKEND
+        // 3. LOAD VỊ TRÍ TUYỂN DỤNG TỪ BACKEND
+        // ==========================================
+        const API_BASE = window.API_BASE_URL || 'http://localhost:3000';
+
+        async function loadOpenJobs() {
+            try {
+                const res = await fetch(`${API_BASE}/api/jobs/open`);
+                const jobs = await res.json();
+                const select = document.getElementById('app-pos');
+                select.innerHTML = '<option value="" disabled selected hidden></option>';
+                jobs.forEach(job => {
+                    const opt = document.createElement('option');
+                    opt.value = job.title;
+                    opt.dataset.jobId = job._id;
+                    opt.textContent = `${job.title} — ${job.location || job.department}`;
+                    select.appendChild(opt);
+                });
+            } catch (error) {
+                console.error('Lỗi tải vị trí tuyển dụng:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadOpenJobs);
+
+        // ==========================================
+        // 4. NỘP HỒ SƠ — AI SCORING QUA BACKEND
         // ==========================================
         async function submitApplication(event) {
             event.preventDefault();
 
-            const API_BASE = window.API_BASE_URL || 'http://localhost:3000';
             const name = document.getElementById('app-name').value.trim();
+            const email = document.getElementById('app-email').value.trim();
             const phone = document.getElementById('app-phone').value.trim();
-            const pos = document.getElementById('app-pos').value;
+            const posSelect = document.getElementById('app-pos');
+            const pos = posSelect.value;
+            const jobPostingId = posSelect.options[posSelect.selectedIndex]?.dataset?.jobId || '';
             const fileInput = document.getElementById('app-cv-file');
             const btn = document.getElementById('btn-submit');
 
@@ -256,8 +284,10 @@
                 btn.innerHTML = "🚀 ĐANG LƯU HỒ SƠ...";
                 const formData = new FormData();
                 formData.append('name', name);
+                formData.append('email', email);
                 formData.append('phone', phone);
                 formData.append('position', pos);
+                formData.append('jobPostingId', jobPostingId);
                 formData.append('cvFile', fileInput.files[0]);
                 formData.append('aiScore', aiResult.aiScore);
                 formData.append('isPass', aiResult.isPass);

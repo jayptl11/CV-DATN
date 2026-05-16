@@ -339,17 +339,37 @@
             });
         }
 
-        function exportExcel() {
+        async function exportExcel() {
+            const API_BASE = window.API_BASE_URL || 'http://localhost:3000';
             const btn = document.querySelector('.tool-btn.primary');
             const originalText = btn.innerHTML;
             btn.innerHTML = "⏳ Đang trích xuất...";
             btn.style.pointerEvents = 'none';
-            
-            setTimeout(() => {
-                alert("✅ File [BaoCao_TaiChinh_KenhQuangCao.xlsx] đã được tải xuống thành công!");
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reports/export`);
+                if (!res.ok) throw new Error('Lỗi server');
+
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'carbon-ats-report.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                btn.innerHTML = "✅ Đã tải xong!";
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
+                }, 2000);
+            } catch (error) {
+                alert("❌ Lỗi tải báo cáo: " + error.message);
                 btn.innerHTML = originalText;
                 btn.style.pointerEvents = 'auto';
-            }, 1200);
+            }
         }
     </script>
 </body>

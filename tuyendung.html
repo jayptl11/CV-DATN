@@ -7,36 +7,35 @@
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="duan.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+
     <style>
-        /* ================= CSS VIP - QUẢN LÝ JOB (GLASSMORPHISM) ================= */
         body { background: #020202; }
 
-        .job-header { 
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; 
+        .job-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
             background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 20px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); 
+            padding: 20px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .job-title h2 { font-size: 24px; font-weight: 800; color: #fff; margin: 0 0 5px 0; letter-spacing: -0.5px;}
         .job-title p { color: #888; margin: 0; font-size: 14px; }
-        
+
         .job-tools { display: flex; gap: 15px; align-items: center;}
-        .search-box { 
-            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); 
-            color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; 
+        .search-box {
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px;
             outline: none; width: 250px; transition: 0.3s;
         }
         .search-box:focus { border-color: #facc15; box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.5); }
-        
-        .btn-create-job { 
-            background: #fff; color: #000; border: none; padding: 12px 24px; border-radius: 8px; 
+
+        .btn-create-job {
+            background: #fff; color: #000; border: none; padding: 12px 24px; border-radius: 8px;
             font-weight: 800; cursor: pointer; font-size: 13px; text-transform: uppercase; transition: 0.3s; letter-spacing: 1px;
         }
         .btn-create-job:hover { background: #facc15; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(250, 204, 21, 0.2); }
 
         .job-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
-        
+
         .job-card {
             background: rgba(20, 20, 20, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; transition: all 0.3s ease;
@@ -51,7 +50,7 @@
         .job-card-header { margin-bottom: 20px; padding-right: 70px;}
         .job-name { font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 8px 0; }
         .job-dept { color: #facc15; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: inline-block; background: rgba(250, 204, 21, 0.1); padding: 4px 10px; border-radius: 4px;}
-        
+
         .job-details { font-size: 13px; color: #aaa; margin: 0; line-height: 1.6;}
         .job-details i { width: 20px; text-align: center; color: #666;}
 
@@ -61,48 +60,28 @@
         .stat-num { font-size: 20px; font-weight: 800; color: #fff; font-family: 'Roboto Mono', monospace; }
         .stat-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; font-weight: 600;}
 
-        /* ================= BẢN VÁ LỖI NÚT ACTION BUTTONS ================= */
         .job-actions { display: flex; gap: 10px; align-items: center; }
-        
-        .btn-action { 
-            flex: 1; 
-            white-space: nowrap; 
-            height: 42px; 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            color: #fff; 
-            border-radius: 8px; 
-            font-weight: 700; 
-            font-size: 12px; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+
+        .btn-action {
+            flex: 1; white-space: nowrap; height: 42px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;
+            transition: 0.3s; display: flex; align-items: center; justify-content: center;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
         .btn-action:hover:not(:disabled) { background: #fff; color: #000; }
         .btn-action:disabled { opacity: 0.3; cursor: not-allowed; }
-        
-        .btn-icon { 
-            flex: 0 0 42px; 
-            width: 42px; 
-            height: 42px; 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            color: #888; 
-            border-radius: 8px; 
-            display: flex; justify-content: center; align-items: center; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            padding: 0;
+
+        .btn-icon {
+            flex: 0 0 42px; width: 42px; height: 42px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #888; border-radius: 8px; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.3s; padding: 0;
         }
         .btn-icon:hover { background: #3b82f6; color: #fff; border-color: #3b82f6;}
-        .btn-icon.toggle-btn:hover { background: #e74c3c; border-color: #e74c3c; color: #fff; } /* Nút tắt */
-        .btn-icon.toggle-btn.closed:hover { background: #10b981; border-color: #10b981; color: #fff; } /* Nút bật */
+        .btn-icon.toggle-btn:hover { background: #e74c3c; border-color: #e74c3c; color: #fff; }
+        .btn-icon.toggle-btn.closed:hover { background: #10b981; border-color: #10b981; color: #fff; }
 
-        /* ================= MODAL TẠO / SỬA JOB ================= */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
             background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -110,7 +89,7 @@
             opacity: 0; transition: opacity 0.3s ease;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
-        
+
         .modal-box {
             background: #0a0a0a; width: 100%; max-width: 600px; border-radius: 16px;
             border: 1px solid #222; box-shadow: 0 30px 60px rgba(0,0,0,0.8);
@@ -127,7 +106,7 @@
         .form-group { display: flex; flex-direction: column; gap: 8px; }
         .form-group.full { grid-column: span 2; }
         .form-group label { color: #888; font-size: 12px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px;}
-        .form-group input, .form-group select, .form-group textarea { 
+        .form-group input, .form-group select, .form-group textarea {
             background: #111; border: 1px solid #333; color: #fff; padding: 12px 15px; border-radius: 8px; font-size: 14px; outline: none; font-family: 'Inter', sans-serif;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #facc15; }
@@ -163,7 +142,6 @@
             </div>
         </div>
 
-        <!-- DANH SÁCH JOB SẼ ĐƯỢC JAVASCRIPT ĐỔ VÀO ĐÂY -->
         <div class="job-grid" id="jobGridContainer">
         </div>
     </div>
@@ -175,15 +153,15 @@
                 <h3 id="modal-title">Tạo Tin Tuyển Dụng Mới</h3>
                 <button class="btn-close" onclick="closeJobModal()">×</button>
             </div>
-            
+
             <div class="modal-body">
-                <input type="hidden" id="job-id"> <!-- Nơi giấu ID khi đang ở chế độ Edit -->
+                <input type="hidden" id="job-id">
 
                 <div class="form-group full">
                     <label>Tiêu đề Công việc</label>
                     <input type="text" id="job-title" placeholder="Vd: Thợ tiện CNC chuyên nghiệp...">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Khối / Phân xưởng</label>
                     <select id="job-dept">
@@ -218,80 +196,76 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
+        const API_BASE = window.API_BASE_URL || 'http://localhost:3000';
+        let allJobs = [];
+
         // ==========================================
-        // KHỞI TẠO DỮ LIỆU MẪU (MOCK DATA)
+        // LOAD DANH SÁCH JOB TỪ BACKEND
         // ==========================================
-        function initJobs() {
-            let jobs = JSON.parse(localStorage.getItem('carbonJobs'));
-            if (!jobs || jobs.length === 0) {
-                // Tạo sẵn 4 jobs ban đầu
-                jobs = [
-                    { id: 'job_1', title: 'Carbon Cue Maker', dept: 'Xưởng Sản Xuất', location: 'Hà Nội (On-site)', deadline: '2026-05-30', desc: 'Sản xuất và chế tác gậy bida carbon cao cấp. Yêu cầu tỉ mỉ, cẩn thận.', totalCv: 45, newCv: 12, hiredCv: 3, isOpen: true },
-                    { id: 'job_2', title: 'CNC Operator', dept: 'Xưởng Cơ Khí', location: 'Hà Nội (On-site)', deadline: '2026-06-15', desc: 'Vận hành máy CNC, lập trình cơ bản. Yêu cầu kinh nghiệm > 1 năm.', totalCv: 28, newCv: 5, hiredCv: 1, isOpen: true },
-                    { id: 'job_3', title: 'Painting Specialist', dept: 'Xưởng Sơn UV', location: 'Bắc Ninh (On-site)', deadline: '2026-05-20', desc: 'Kỹ thuật sơn UV lên bề mặt carbon. Ưu tiên thợ sơn PU/UV lành nghề.', totalCv: 15, newCv: 2, hiredCv: 0, isOpen: true },
-                    { id: 'job_4', title: 'Showroom Staff', dept: 'Showroom / Kinh doanh', location: 'Hà Nội (Ca xoay)', deadline: '2026-05-01', desc: 'Tư vấn bán hàng gậy bida tại Showroom. Cần ngoại hình ưa nhìn.', totalCv: 65, newCv: 0, hiredCv: 2, isOpen: false }
-                ];
-                localStorage.setItem('carbonJobs', JSON.stringify(jobs));
+        async function loadJobs() {
+            try {
+                const res = await fetch(`${API_BASE}/api/jobs`);
+                allJobs = await res.json();
+                renderJobs();
+            } catch (error) {
+                console.error('Lỗi tải tin tuyển dụng:', error);
             }
-            return jobs;
         }
 
         // ==========================================
-        // VẼ DANH SÁCH JOB RA MÀN HÌNH
+        // VẼ DANH SÁCH JOB
         // ==========================================
         function renderJobs() {
-            const jobs = JSON.parse(localStorage.getItem('carbonJobs')) || [];
             const container = document.getElementById('jobGridContainer');
             const searchInput = document.getElementById('search-job').value.toLowerCase();
             container.innerHTML = '';
 
-            // Lọc theo thanh tìm kiếm
-            const filteredJobs = jobs.filter(j => 
-                j.title.toLowerCase().includes(searchInput) || 
-                j.dept.toLowerCase().includes(searchInput)
+            const filteredJobs = allJobs.filter(j =>
+                j.title.toLowerCase().includes(searchInput) ||
+                j.department.toLowerCase().includes(searchInput)
             );
 
             filteredJobs.forEach(job => {
-                // Xử lý Ngày tháng hiển thị
                 let displayDate = "Chưa có hạn";
-                if(job.deadline) {
+                if (job.deadline) {
                     const d = new Date(job.deadline);
-                    displayDate = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
+                    displayDate = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
                 }
 
-                // Setup giao diện tùy theo Trạng thái Đóng/Mở
-                const statusClass = job.isOpen ? 'status-open' : 'status-closed';
-                const statusText = job.isOpen ? 'Đang mở' : 'Đã đóng';
-                const cardStyle = job.isOpen ? '' : 'opacity: 0.6;';
-                const toggleIcon = job.isOpen ? 'fa-power-off' : 'fa-play';
-                const toggleTitle = job.isOpen ? 'Đóng Job này' : 'Mở lại Job';
-                const toggleBtnClass = job.isOpen ? 'toggle-btn' : 'toggle-btn closed';
-                const btnDisabled = job.isOpen ? '' : 'disabled';
+                const isOpen = job.status === 'open';
+                const statusClass = isOpen ? 'status-open' : 'status-closed';
+                const statusText = isOpen ? 'Đang mở' : 'Đã đóng';
+                const cardStyle = isOpen ? '' : 'opacity: 0.6;';
+                const toggleIcon = isOpen ? 'fa-power-off' : 'fa-play';
+                const toggleTitle = isOpen ? 'Đóng Job này' : 'Mở lại Job';
+                const toggleBtnClass = isOpen ? 'toggle-btn' : 'toggle-btn closed';
+                const btnDisabled = isOpen ? '' : 'disabled';
 
-                const html = `
+                container.innerHTML += `
                     <div class="job-card" style="${cardStyle}">
                         <span class="status-badge ${statusClass}">${statusText}</span>
                         <div class="job-card-header">
                             <h3 class="job-name">${job.title}</h3>
-                            <span class="job-dept">${job.dept}</span>
+                            <span class="job-dept">${job.department}</span>
                             <p class="job-details">
-                                <i class="fas fa-map-marker-alt"></i> ${job.location}<br>
-                                <i class="fas fa-calendar-alt"></i> ${job.isOpen ? 'Hết hạn' : 'Đã đóng'}: ${displayDate}
+                                <i class="fas fa-map-marker-alt"></i> ${job.location || 'Chưa cập nhật'}<br>
+                                <i class="fas fa-calendar-alt"></i> ${isOpen ? 'Hết hạn' : 'Đã đóng'}: ${displayDate}
                             </p>
                         </div>
-                        
+
                         <div class="job-stats">
                             <div class="stat-item">
-                                <div class="stat-num">${job.totalCv}</div>
+                                <div class="stat-num">${job.totalCV}</div>
                                 <div class="stat-label">Tổng CV</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-num" style="color:#facc15;">${job.newCv}</div>
+                                <div class="stat-num" style="color:#facc15;">${job.newCV}</div>
                                 <div class="stat-label">CV Mới</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-num" style="color:#10b981;">${job.hiredCv}</div>
+                                <div class="stat-num" style="color:#10b981;">${job.hiredCount}</div>
                                 <div class="stat-label">Đã Tuyển</div>
                             </div>
                         </div>
@@ -299,33 +273,28 @@
                         <div class="job-actions">
                             <button class="btn-action" onclick="window.location.href='pheuungvien.html'" ${btnDisabled}>Xem Phễu CV</button>
                             <button class="btn-icon" onclick="copyLink(this)" title="Copy Link ứng tuyển" ${btnDisabled}><i class="fas fa-link"></i></button>
-                            <!-- NÚT CHỈNH SỬA (EDIT) -->
-                            <button class="btn-icon" onclick="openJobModal('${job.id}')" title="Sửa mô tả công việc (JD)"><i class="fas fa-pen"></i></button>
-                            <!-- NÚT BẬT / TẮT (TOGGLE) -->
-                            <button class="btn-icon ${toggleBtnClass}" onclick="toggleJobStatus('${job.id}')" title="${toggleTitle}"><i class="fas ${toggleIcon}"></i></button>
+                            <button class="btn-icon" onclick="openJobModal('${job._id}')" title="Sửa"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon ${toggleBtnClass}" onclick="toggleJobStatus('${job._id}')" title="${toggleTitle}"><i class="fas ${toggleIcon}"></i></button>
                         </div>
                     </div>
                 `;
-                container.innerHTML += html;
             });
         }
 
         // ==========================================
-        // ĐÓNG / MỞ JOB (TOGGLE)
+        // ĐÓNG / MỞ JOB
         // ==========================================
-        function toggleJobStatus(id) {
-            let jobs = JSON.parse(localStorage.getItem('carbonJobs')) || [];
-            const index = jobs.findIndex(j => j.id === id);
-            if (index !== -1) {
-                // Đảo ngược trạng thái (Đang Mở -> Đóng, Đang Đóng -> Mở)
-                jobs[index].isOpen = !jobs[index].isOpen;
-                localStorage.setItem('carbonJobs', JSON.stringify(jobs));
-                renderJobs(); // Tải lại thẻ ngay lập tức
+        async function toggleJobStatus(id) {
+            try {
+                await fetch(`${API_BASE}/api/jobs/${id}/toggle`, { method: 'PATCH' });
+                await loadJobs();
+            } catch (error) {
+                alert('Lỗi cập nhật trạng thái!');
             }
         }
 
         // ==========================================
-        // LOGIC POPUP (TẠO MỚI & CHỈNH SỬA)
+        // MODAL TẠO / SỬA
         // ==========================================
         const modal = document.getElementById('jobModal');
 
@@ -334,25 +303,22 @@
             const btnSave = document.querySelector('.btn-save');
 
             if (id) {
-                // TRƯỜNG HỢP: ẤN NÚT SỬA (EDIT)
                 titleEl.innerText = "Chỉnh sửa Tin Tuyển Dụng";
                 btnSave.innerText = "Lưu Thay Đổi";
-                
-                const jobs = JSON.parse(localStorage.getItem('carbonJobs')) || [];
-                const job = jobs.find(j => j.id === id);
-                if(job) {
-                    document.getElementById('job-id').value = job.id;
+
+                const job = allJobs.find(j => j._id === id);
+                if (job) {
+                    document.getElementById('job-id').value = job._id;
                     document.getElementById('job-title').value = job.title;
-                    document.getElementById('job-dept').value = job.dept;
-                    document.getElementById('job-deadline').value = job.deadline;
-                    document.getElementById('job-location').value = job.location;
-                    document.getElementById('job-desc').value = job.desc;
+                    document.getElementById('job-dept').value = job.department;
+                    document.getElementById('job-deadline').value = job.deadline ? job.deadline.split('T')[0] : '';
+                    document.getElementById('job-location').value = job.location || '';
+                    document.getElementById('job-desc').value = job.description || '';
                 }
             } else {
-                // TRƯỜNG HỢP: ẤN NÚT TẠO MỚI
                 titleEl.innerText = "Tạo Tin Tuyển Dụng Mới";
                 btnSave.innerText = "Đăng Tuyển";
-                
+
                 document.getElementById('job-id').value = '';
                 document.getElementById('job-title').value = '';
                 document.getElementById('job-dept').value = 'Xưởng Sản Xuất';
@@ -370,55 +336,50 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        function saveJob() {
+        async function saveJob() {
             const id = document.getElementById('job-id').value;
             const title = document.getElementById('job-title').value;
-            const dept = document.getElementById('job-dept').value;
+            const department = document.getElementById('job-dept').value;
             const deadline = document.getElementById('job-deadline').value;
             const location = document.getElementById('job-location').value;
-            const desc = document.getElementById('job-desc').value;
+            const description = document.getElementById('job-desc').value;
 
-            if(!title) return alert("Vui lòng nhập Tiêu đề công việc!");
+            if (!title) return alert("Vui lòng nhập Tiêu đề công việc!");
 
-            let jobs = JSON.parse(localStorage.getItem('carbonJobs')) || [];
+            const body = { title, department, location, deadline, description };
 
-            if (id) {
-                // UPDATE: Cập nhật Job cũ
-                const index = jobs.findIndex(j => j.id === id);
-                if(index !== -1) {
-                    jobs[index].title = title;
-                    jobs[index].dept = dept;
-                    jobs[index].deadline = deadline;
-                    jobs[index].location = location;
-                    jobs[index].desc = desc;
+            try {
+                if (id) {
+                    await fetch(`${API_BASE}/api/jobs/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                } else {
+                    await fetch(`${API_BASE}/api/jobs`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
                 }
-            } else {
-                // CREATE: Tạo Job mới
-                const newJob = {
-                    id: 'job_' + Date.now(),
-                    title: title,
-                    dept: dept,
-                    location: location || 'Hà Nội (On-site)',
-                    deadline: deadline,
-                    desc: desc,
-                    totalCv: 0, newCv: 0, hiredCv: 0,
-                    isOpen: true
-                };
-                jobs.unshift(newJob); // Đẩy lên đầu danh sách
-            }
 
-            localStorage.setItem('carbonJobs', JSON.stringify(jobs));
-            closeJobModal();
-            renderJobs();
+                closeJobModal();
+                await loadJobs();
+            } catch (error) {
+                alert('Lỗi lưu tin tuyển dụng!');
+            }
         }
 
         function copyLink(btn) {
-            if(btn.disabled) return;
+            if (btn.disabled) return;
             const icon = btn.querySelector('i');
             icon.className = 'fas fa-check';
             btn.style.borderColor = '#10b981';
             btn.style.color = '#10b981';
-            
+
+            // Copy link ung tuyen
+            navigator.clipboard.writeText(window.location.origin + '/ungtuyen.html');
+
             setTimeout(() => {
                 icon.className = 'fas fa-link';
                 btn.style.borderColor = '';
@@ -427,12 +388,9 @@
         }
 
         // ==========================================
-        // KHỞI CHẠY KHI MỞ TRANG
+        // KHỞI CHẠY
         // ==========================================
-        document.addEventListener("DOMContentLoaded", () => {
-            initJobs();
-            renderJobs();
-        });
+        document.addEventListener("DOMContentLoaded", loadJobs);
     </script>
 </body>
 </html>
