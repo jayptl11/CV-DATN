@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* CSS ĐẶC QUYỀN CHO TRANG AUTH (SPA + 3D ORBS) */
+        /* CSS đặc quyền cho trang login */
         body { margin: 0; padding: 0; overflow: hidden; background: #050505; font-family: 'SF Pro Display', 'Inter', sans-serif;}
         
         /* Nền tối ưu chiều sâu */
@@ -19,7 +19,7 @@
             overflow: hidden;
         }
 
-        /* 1. HIỆU ỨNG QUẢ CẦU PHÁT SÁNG TRÔI NỔI (APPLE STYLE) */
+        /* 1. hiệu ứng quả cầu phát sáng  */
         .shape { position: absolute; filter: blur(80px); opacity: 0.6; animation: float 10s infinite ease-in-out alternate; z-index: 1;}
         .shape-1 { width: 350px; height: 350px; background: #facc15; top: -10%; left: 15%; animation-delay: 0s; }
         .shape-2 { width: 400px; height: 400px; background: #3b82f6; bottom: -20%; right: 10%; animation-delay: -5s; opacity: 0.4;}
@@ -78,9 +78,7 @@
             color: #fff; font-size: 15px; outline: none; transition: 0.3s; box-sizing: border-box; font-family: 'Inter', sans-serif;
         }
         
-        /* ====================================================================
-           ĐÂY LÀ ĐOẠN FIX LỖI NỀN TRẮNG KHI TRÌNH DUYỆT TỰ ĐỘNG ĐIỀN (AUTOFILL) 
-           ==================================================================== */
+        /* autofill */
         .input-group input:-webkit-autofill,
         .input-group input:-webkit-autofill:hover, 
         .input-group input:-webkit-autofill:focus, 
@@ -149,7 +147,7 @@
     </div>
 
     <script>
-        // Hàm Xử lý Đăng nhập ảo (Bảo mật bằng Hardcode tạm thời cho đồ án)
+        // Hàm Xử lý Đăng nhập ảo 
         function handleLogin(event) {
             event.preventDefault(); // Ngăn chặn tải lại trang form
             
@@ -158,7 +156,7 @@
             const loginCard = document.getElementById('loginCard');
             const errorText = document.getElementById('errorText');
 
-            // ĐÃ ĐỔI: Set cứng ID là 0901518899 và Pass là 123456 theo yêu cầu của Tùng
+            // Set cứng ID là 0901518899 và Pass là 123456 theo yêu cầu
             if (user === '0901518899' && pass === '123456') {
                 
                 // Tắt thông báo lỗi (nếu đang hiện)
